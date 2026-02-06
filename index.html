@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sailing Conditions Tracker</title>
+    <style>
+        /* Basic styling to make it look good on phone and desktop */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        /* Form styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .rating-description {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        /* Custom slider styling */
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #333;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Entry list styling */
+        .entries-section {
+            margin-top: 30px;
+        }
+        
+        .entries-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .entries-header h2 {
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .entry-count {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .entry-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .entry-date {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .entry-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .metric {
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .entry-notes {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #ddd;
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        
+        .delete-btn:hover {
+            background: #ee5a6f;
+        }
+        
+        .no-entries {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⛵ Sailing Conditions Tracker</h1>
+        <p class="subtitle">Log your sailing conditions and track them over time</p>
+        
+        <!-- Data Entry Form -->
+        <form id="conditionsForm">
+            <!-- Skies -->
+            <div class="form-group">
+                <label>Skies <span class="value-display" id="skiesValue">3</span></label>
+                <div class="rating-description">1 = Sunny, 5 = Rainy</div>
+                <input type="range" id="skies" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Seas -->
+            <div class="form-group">
+                <label>Seas <span class="value-display" id="seasValue">3</span></label>
+                <div class="rating-description">1 = Smooth, 5 = Rough</div>
+                <input type="range" id="seas" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Winds -->
+            <div class="form-group">
+                <label>Winds <span class="value-display" id="windsValue">3</span></label>
+                <div class="rating-description">1 = Following, 5 = Head winds</div>
+                <input type="range" id="winds" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Currents -->
+            <div class="form-group">
+                <label>Currents <span class="value-display" id="currentsValue">3</span></label>
+                <div class="rating-description">1 = Favorable, 5 = Rip tide</div>
+                <input type="range" id="currents" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Visibility -->
+            <div class="form-group">
+                <label>Visibility <span class="value-display" id="visibilityValue">3</span></label>
+                <div class="rating-description">1 = Clear, 5 = Foggy/Hazy</div>
+                <input type="range" id="visibility" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Barometric Pressure -->
+            <div class="form-group">
+                <label>Barometric Pressure Trend <span class="value-display" id="pressureValue">3</span></label>
+                <div class="rating-description">1 = Rising, 3 = Steady, 5 = Falling</div>
+                <input type="range" id="pressure" min="1" max="5" value="3">
+            </div>
+            
+            <!-- Notes -->
+            <div class="form-group">
+                <label>Notes (optional)</label>
+                <textarea id="notes" placeholder="Add any additional observations..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-primary">Save Entry</button>
+        </form>
+        
+        <!-- Export Button -->
+        <button onclick="exportToCSV()" class="btn-secondary">Export All Data to CSV</button>
+        
+        <!-- Entries Display -->
+        <div class="entries-section">
+            <div class="entries-header">
+                <h2>Recent Entries</h2>
+                <span class="entry-count" id="entryCount">0 entries</span>
+            </div>
+            <div id="entriesList"></div>
+        </div>
+    </div>
+
+    <script>
+        // This JavaScript code handles all the functionality
+        
+        // Update the displayed values when sliders are moved
+        document.getElementById('skies').addEventListener('input', function(e) {
+            document.getElementById('skiesValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('seas').addEventListener('input', function(e) {
+            document.getElementById('seasValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('winds').addEventListener('input', function(e) {
+            document.getElementById('windsValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('currents').addEventListener('input', function(e) {
+            document.getElementById('currentsValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('visibility').addEventListener('input', function(e) {
+            document.getElementById('visibilityValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('pressure').addEventListener('input', function(e) {
+            document.getElementById('pressureValue').textContent = e.target.value;
+        });
+        
+        // Handle form submission
+        document.getElementById('conditionsForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent page reload
+            
+            // Gather the data from the form
+            const entry = {
+                timestamp: new Date().toISOString(), // Save the current date/time
+                skies: document.getElementById('skies').value,
+                seas: document.getElementById('seas').value,
+                winds: document.getElementById('winds').value,
+                currents: document.getElementById('currents').value,
+                visibility: document.getElementById('visibility').value,
+                pressure: document.getElementById('pressure').value,
+                notes: document.getElementById('notes').value
+            };
+            
+            // Get existing entries from localStorage (or create empty array if none exist)
+            let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+            
+            // Add the new entry to the beginning of the array (most recent first)
+            entries.unshift(entry);
+            
+            // Save back to localStorage
+            localStorage.setItem('sailingEntries', JSON.stringify(entries));
+            
+            // Reset the form
+            document.getElementById('conditionsForm').reset();
+            // Reset the value displays
+            document.getElementById('skiesValue').textContent = '3';
+            document.getElementById('seasValue').textContent = '3';
+            document.getElementById('windsValue').textContent = '3';
+            document.getElementById('currentsValue').textContent = '3';
+            document.getElementById('visibilityValue').textContent = '3';
+            document.getElementById('pressureValue').textContent = '3';
+            
+            // Refresh the display
+            displayEntries();
+            
+            // Show a quick confirmation (optional)
+            alert('Entry saved successfully!');
+        });
+        
+        // Function to display all entries
+        function displayEntries() {
+            const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+            const entriesList = document.getElementById('entriesList');
+            const entryCount = document.getElementById('entryCount');
+            
+            // Update count
+            entryCount.textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+            
+            // If no entries, show message
+            if (entries.length === 0) {
+                entriesList.innerHTML = '<div class="no-entries">No entries yet. Add your first sailing log above!</div>';
+                return;
+            }
+            
+            // Build HTML for each entry
+            entriesList.innerHTML = entries.map((entry, index) => {
+                const date = new Date(entry.timestamp);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="entry-card">
+                        <div class="entry-date">${formattedDate}</div>
+                        <div class="entry-metrics">
+                            <div class="metric">Skies: <span class="metric-value">${entry.skies}</span></div>
+                            <div class="metric">Seas: <span class="metric-value">${entry.seas}</span></div>
+                            <div class="metric">Winds: <span class="metric-value">${entry.winds}</span></div>
+                            <div class="metric">Currents: <span class="metric-value">${entry.currents}</span></div>
+                            <div class="metric">Visibility: <span class="metric-value">${entry.visibility}</span></div>
+                            <div class="metric">Pressure: <span class="metric-value">${entry.pressure}</span></div>
+                        </div>
+                        ${entry.notes ? `<div class="entry-notes">${entry.notes}</div>` : ''}
+                        <button class="delete-btn" onclick="deleteEntry(${index})">Delete</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Function to delete an entry
+        function deleteEntry(index) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+                entries.splice(index, 1); // Remove the entry at this index
+                localStorage.setItem('sailingEntries', JSON.stringify(entries));
+                displayEntries(); // Refresh the display
+            }
+        }
+        
+        // Function to export data to CSV
+        function exportToCSV() {
+            const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+            
+            if (entries.length === 0) {
+                alert('No data to export yet!');
+                return;
+            }
+            
+            // Create CSV header
+            let csv = 'Date,Time,Skies,Seas,Winds,Currents,Visibility,Pressure,Notes\n';
+            
+            // Add each entry as a row
+            entries.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                const dateStr = date.toLocaleDateString('en-US');
+                const timeStr = date.toLocaleTimeString('en-US');
+                
+                // Escape notes field (in case it contains commas)
+                const notes = entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : '';
+                
+                csv += `${dateStr},${timeStr},${entry.skies},${entry.seas},${entry.winds},${entry.currents},${entry.visibility},${entry.pressure},${notes}\n`;
+            });
+            
+            // Create a download link
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sailing-conditions-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // Load and display entries when page loads
+        displayEntries();
+    </script>
+</body>
+</html>
