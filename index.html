@@ -1,470 +1,880 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sailing Conditions Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* Basic styling to make it look good on phone and desktop */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --navy: #0d1b2a;
+            --deep: #1b2d3f;
+            --brass: #c9a84c;
+            --brass-light: #e2c97e;
+            --rope: #d4b483;
+            --sea: #2e7da6;
+            --sea-light: #4aa3cc;
+            --foam: #e8f4f8;
+            --red: #c0392b;
+            --orange: #e67e22;
+            --yellow: #f1c40f;
+            --yellow-green: #a3be45;
+            --green: #27ae60;
+            --text-light: #f0e6d0;
+            --text-muted: #8fa8be;
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-        
-        /* Form styling */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .rating-description {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        /* Custom slider styling */
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-        }
-        
-        input[type="range"]::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .value-display {
-            display: inline-block;
-            background: #f0f0f0;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-weight: 600;
-            color: #333;
-            min-width: 30px;
-            text-align: center;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 14px;
-            resize: vertical;
-            min-height: 60px;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        /* Button styling */
-        button {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-            margin-bottom: 10px;
-        }
-        
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-        
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-        }
-        
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-        
-        /* Entry list styling */
-        .entries-section {
-            margin-top: 30px;
-        }
-        
-        .entries-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .entries-header h2 {
-            color: #333;
-            font-size: 20px;
-        }
-        
-        .entry-count {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .entry-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .entry-date {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .entry-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .metric {
-            font-size: 13px;
-            color: #555;
-        }
-        
-        .metric-value {
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .entry-notes {
-            font-size: 13px;
-            color: #666;
-            font-style: italic;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #ddd;
-        }
-        
-        .delete-btn {
-            background: #ff4757;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        
-        .delete-btn:hover {
-            background: #ee5a6f;
-        }
-        
-        .no-entries {
-            text-align: center;
-            color: #999;
-            padding: 40px 20px;
-            font-style: italic;
-        }
-    </style>
+
+```
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Source Sans 3', sans-serif;
+        background-color: var(--navy);
+        background-image: 
+            radial-gradient(ellipse at 20% 50%, rgba(46,125,166,0.15) 0%, transparent 60%),
+            radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+            repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 40px,
+                rgba(255,255,255,0.01) 40px,
+                rgba(255,255,255,0.01) 41px
+            );
+        min-height: 100vh;
+        padding: 24px 16px 60px;
+        color: var(--text-light);
+    }
+
+    .container {
+        max-width: 580px;
+        margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+        text-align: center;
+        margin-bottom: 32px;
+        position: relative;
+    }
+
+    .header::before {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: var(--brass);
+        margin: 0 auto 16px;
+    }
+
+    .header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 28px;
+        color: var(--brass-light);
+        letter-spacing: 0.02em;
+        margin-bottom: 6px;
+    }
+
+    .header .subtitle {
+        font-size: 13px;
+        color: var(--text-muted);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 300;
+    }
+
+    .header::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: var(--brass);
+        margin: 16px auto 0;
+    }
+
+    /* Card */
+    .card {
+        background: var(--deep);
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 12px;
+        padding: 28px 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 15px;
+        color: var(--brass);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    /* Condition sliders */
+    .condition-row {
+        margin-bottom: 22px;
+    }
+
+    .condition-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 6px;
+    }
+
+    .condition-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-light);
+        letter-spacing: 0.04em;
+    }
+
+    .condition-value-display {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px;
+        color: var(--brass-light);
+        min-width: 24px;
+        text-align: right;
+    }
+
+    .condition-endpoints {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        letter-spacing: 0.04em;
+    }
+
+    .endpoint-best { color: var(--green); font-weight: 600; }
+    .endpoint-worst { color: #e74c3c; font-weight: 600; }
+
+    /* Slider */
+    input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+        cursor: pointer;
+    }
+
+    .slider-skies       { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+    .slider-seas        { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+    .slider-winds       { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+    .slider-currents    { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+    .slider-visibility  { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+    .slider-pressure    { background: linear-gradient(to right, var(--green), #f1c40f, #e74c3c); }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--brass-light);
+        border: 3px solid var(--navy);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        cursor: pointer;
+        transition: transform 0.15s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--brass-light);
+        border: 3px solid var(--navy);
+        cursor: pointer;
+    }
+
+    /* Tick marks under slider */
+    .slider-ticks {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 2px 0;
+    }
+
+    .tick {
+        width: 1px;
+        height: 5px;
+        background: rgba(255,255,255,0.15);
+    }
+
+    /* Fuel Gauge */
+    .fuel-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 0 4px;
+    }
+
+    .fuel-gauge-container {
+        position: relative;
+        width: 240px;
+        height: 130px;
+        margin-bottom: 8px;
+    }
+
+    .fuel-gauge-svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    .fuel-label-row {
+        display: flex;
+        justify-content: space-between;
+        width: 240px;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+    }
+
+    .fuel-label-row span:first-child { color: #e74c3c; font-weight: 600; }
+    .fuel-label-row span:last-child  { color: var(--green); font-weight: 600; }
+
+    /* Fuel level buttons */
+    .fuel-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .fuel-btn {
+        padding: 8px 12px;
+        border: 1px solid rgba(201,168,76,0.3);
+        border-radius: 6px;
+        background: rgba(255,255,255,0.04);
+        color: var(--text-muted);
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.04em;
+    }
+
+    .fuel-btn:hover {
+        border-color: var(--brass);
+        color: var(--brass-light);
+        background: rgba(201,168,76,0.08);
+    }
+
+    .fuel-btn.active {
+        border-color: var(--brass);
+        color: var(--navy);
+        font-weight: 700;
+    }
+
+    .fuel-btn[data-level="critical"].active { background: var(--red); border-color: var(--red); color: white; }
+    .fuel-btn[data-level="quarter"].active  { background: var(--orange); border-color: var(--orange); color: white; }
+    .fuel-btn[data-level="half"].active     { background: var(--yellow); border-color: var(--yellow); color: var(--navy); }
+    .fuel-btn[data-level="three"].active    { background: var(--yellow-green); border-color: var(--yellow-green); color: var(--navy); }
+    .fuel-btn[data-level="full"].active     { background: var(--green); border-color: var(--green); color: white; }
+
+    /* Notes */
+    textarea {
+        width: 100%;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(201,168,76,0.2);
+        border-radius: 8px;
+        padding: 12px;
+        color: var(--text-light);
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 70px;
+        transition: border-color 0.2s;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--brass);
+    }
+
+    textarea::placeholder { color: var(--text-muted); }
+
+    /* Buttons */
+    .btn-primary {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--brass) 0%, var(--brass-light) 100%);
+        color: var(--navy);
+        border: none;
+        border-radius: 8px;
+        font-family: 'Playfair Display', serif;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 12px;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(201,168,76,0.3);
+    }
+
+    .btn-secondary {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.06em;
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--sea);
+        color: var(--sea-light);
+    }
+
+    /* Entries */
+    .entries-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .entries-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: var(--brass-light);
+    }
+
+    .entry-count {
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .entry-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(201,168,76,0.15);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 12px;
+        border-left: 3px solid var(--brass);
+        transition: border-color 0.2s;
+    }
+
+    .entry-card:hover {
+        border-left-color: var(--sea-light);
+    }
+
+    .entry-date {
+        font-family: 'Playfair Display', serif;
+        font-size: 14px;
+        color: var(--brass-light);
+        margin-bottom: 12px;
+    }
+
+    .entry-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .metric {
+        font-size: 12px;
+        color: var(--text-muted);
+    }
+
+    .metric-value {
+        font-weight: 700;
+        font-size: 15px;
+        display: block;
+        color: var(--text-light);
+    }
+
+    .metric-value.score-1 { color: var(--green); }
+    .metric-value.score-2 { color: var(--yellow-green); }
+    .metric-value.score-3 { color: var(--yellow); }
+    .metric-value.score-4 { color: var(--orange); }
+    .metric-value.score-5 { color: #e74c3c; }
+
+    .entry-fuel {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .entry-notes {
+        font-size: 13px;
+        color: var(--text-muted);
+        font-style: italic;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .delete-btn {
+        background: transparent;
+        color: rgba(231,76,60,0.5);
+        border: 1px solid rgba(231,76,60,0.2);
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 11px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: all 0.2s;
+        font-family: 'Source Sans 3', sans-serif;
+        letter-spacing: 0.06em;
+    }
+
+    .delete-btn:hover {
+        background: rgba(231,76,60,0.1);
+        color: #e74c3c;
+        border-color: #e74c3c;
+    }
+
+    .no-entries {
+        text-align: center;
+        color: var(--text-muted);
+        padding: 40px 20px;
+        font-style: italic;
+        font-size: 14px;
+    }
+
+    /* Toast notification */
+    .toast {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: var(--brass);
+        color: var(--navy);
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        opacity: 0;
+        transition: all 0.3s;
+        pointer-events: none;
+        z-index: 100;
+        letter-spacing: 0.04em;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+</style>
+```
+
 </head>
 <body>
-    <div class="container">
-        <h1>⛵ Sailing Conditions Tracker</h1>
-        <p class="subtitle">Log your sailing conditions and track them over time</p>
-        
-        <!-- Data Entry Form -->
-        <form id="conditionsForm">
-            <!-- Skies -->
-            <div class="form-group">
-                <label>Skies <span class="value-display" id="skiesValue">3</span></label>
-                <div class="rating-description">1 = Sunny, 5 = Rainy</div>
-                <input type="range" id="skies" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Seas -->
-            <div class="form-group">
-                <label>Seas <span class="value-display" id="seasValue">3</span></label>
-                <div class="rating-description">1 = Smooth, 5 = Rough</div>
-                <input type="range" id="seas" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Winds -->
-            <div class="form-group">
-                <label>Winds <span class="value-display" id="windsValue">3</span></label>
-                <div class="rating-description">1 = Following, 5 = Head winds</div>
-                <input type="range" id="winds" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Currents -->
-            <div class="form-group">
-                <label>Currents <span class="value-display" id="currentsValue">3</span></label>
-                <div class="rating-description">1 = Favorable, 5 = Rip tide</div>
-                <input type="range" id="currents" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Visibility -->
-            <div class="form-group">
-                <label>Visibility <span class="value-display" id="visibilityValue">3</span></label>
-                <div class="rating-description">1 = Clear, 5 = Foggy/Hazy</div>
-                <input type="range" id="visibility" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Barometric Pressure -->
-            <div class="form-group">
-                <label>Barometric Pressure Trend <span class="value-display" id="pressureValue">3</span></label>
-                <div class="rating-description">1 = Rising, 3 = Steady, 5 = Falling</div>
-                <input type="range" id="pressure" min="1" max="5" value="3">
-            </div>
-            
-            <!-- Notes -->
-            <div class="form-group">
-                <label>Notes (optional)</label>
-                <textarea id="notes" placeholder="Add any additional observations..."></textarea>
-            </div>
-            
-            <button type="submit" class="btn-primary">Save Entry</button>
-        </form>
-        
-        <!-- Export Button -->
-        <button onclick="exportToCSV()" class="btn-secondary">Export All Data to CSV</button>
-        
-        <!-- Entries Display -->
-        <div class="entries-section">
-            <div class="entries-header">
-                <h2>Recent Entries</h2>
-                <span class="entry-count" id="entryCount">0 entries</span>
-            </div>
-            <div id="entriesList"></div>
+
+<div class="container">
+
+```
+<div class="header">
+    <h1>⚓ Sailing Conditions</h1>
+    <p class="subtitle">Pre-Launch Log</p>
+</div>
+
+<!-- Conditions Card -->
+<div class="card">
+    <div class="card-title">Conditions — 1 Best · 5 Worst</div>
+
+    <!-- Skies -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Skies</span>
+            <span class="condition-value-display" id="skiesValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Clear</span>
+            <span class="endpoint-worst">5 — Stormy</span>
+        </div>
+        <input type="range" class="slider-skies" id="skies" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
         </div>
     </div>
 
-    <script>
-        // This JavaScript code handles all the functionality
-        
-        // Update the displayed values when sliders are moved
-        document.getElementById('skies').addEventListener('input', function(e) {
-            document.getElementById('skiesValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('seas').addEventListener('input', function(e) {
-            document.getElementById('seasValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('winds').addEventListener('input', function(e) {
-            document.getElementById('windsValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('currents').addEventListener('input', function(e) {
-            document.getElementById('currentsValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('visibility').addEventListener('input', function(e) {
-            document.getElementById('visibilityValue').textContent = e.target.value;
-        });
-        
-        document.getElementById('pressure').addEventListener('input', function(e) {
-            document.getElementById('pressureValue').textContent = e.target.value;
-        });
-        
-        // Handle form submission
-        document.getElementById('conditionsForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent page reload
-            
-            // Gather the data from the form
-            const entry = {
-                timestamp: new Date().toISOString(), // Save the current date/time
-                skies: document.getElementById('skies').value,
-                seas: document.getElementById('seas').value,
-                winds: document.getElementById('winds').value,
-                currents: document.getElementById('currents').value,
-                visibility: document.getElementById('visibility').value,
-                pressure: document.getElementById('pressure').value,
-                notes: document.getElementById('notes').value
-            };
-            
-            // Get existing entries from localStorage (or create empty array if none exist)
-            let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
-            
-            // Add the new entry to the beginning of the array (most recent first)
-            entries.unshift(entry);
-            
-            // Save back to localStorage
-            localStorage.setItem('sailingEntries', JSON.stringify(entries));
-            
-            // Reset the form
-            document.getElementById('conditionsForm').reset();
-            // Reset the value displays
-            document.getElementById('skiesValue').textContent = '3';
-            document.getElementById('seasValue').textContent = '3';
-            document.getElementById('windsValue').textContent = '3';
-            document.getElementById('currentsValue').textContent = '3';
-            document.getElementById('visibilityValue').textContent = '3';
-            document.getElementById('pressureValue').textContent = '3';
-            
-            // Refresh the display
-            displayEntries();
-            
-            // Show a quick confirmation (optional)
-            alert('Entry saved successfully!');
-        });
-        
-        // Function to display all entries
-        function displayEntries() {
-            const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
-            const entriesList = document.getElementById('entriesList');
-            const entryCount = document.getElementById('entryCount');
-            
-            // Update count
-            entryCount.textContent = `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
-            
-            // If no entries, show message
-            if (entries.length === 0) {
-                entriesList.innerHTML = '<div class="no-entries">No entries yet. Add your first sailing log above!</div>';
+    <!-- Seas -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Seas</span>
+            <span class="condition-value-display" id="seasValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Calm</span>
+            <span class="endpoint-worst">5 — Rough</span>
+        </div>
+        <input type="range" class="slider-seas" id="seas" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+    </div>
+
+    <!-- Winds -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Wind</span>
+            <span class="condition-value-display" id="windsValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Strong Tailwind</span>
+            <span class="endpoint-worst">5 — Strong Headwind</span>
+        </div>
+        <input type="range" class="slider-winds" id="winds" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+    </div>
+
+    <!-- Currents -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Currents</span>
+            <span class="condition-value-display" id="currentsValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Favorable</span>
+            <span class="endpoint-worst">5 — Strongly Adverse</span>
+        </div>
+        <input type="range" class="slider-currents" id="currents" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+    </div>
+
+    <!-- Visibility -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Visibility</span>
+            <span class="condition-value-display" id="visibilityValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Crystal Clear</span>
+            <span class="endpoint-worst">5 — Fog / Zero Vis</span>
+        </div>
+        <input type="range" class="slider-visibility" id="visibility" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+    </div>
+
+    <!-- Barometric Pressure -->
+    <div class="condition-row">
+        <div class="condition-header">
+            <span class="condition-label">Barometric Trend</span>
+            <span class="condition-value-display" id="pressureValue">3</span>
+        </div>
+        <div class="condition-endpoints">
+            <span class="endpoint-best">1 — Rising</span>
+            <span class="endpoint-worst">5 — Falling Fast</span>
+        </div>
+        <input type="range" class="slider-pressure" id="pressure" min="1" max="5" value="3" step="1">
+        <div class="slider-ticks">
+            <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Fuel Gauge Card -->
+<div class="card">
+    <div class="card-title">Outboard Fuel</div>
+    <div class="fuel-section">
+
+        <div class="fuel-gauge-container">
+            <svg class="fuel-gauge-svg" viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
+                <!-- Arc segments: 5 colored zones -->
+                <!-- We draw 5 arc segments from ~200deg to ~340deg (left to right) -->
+                <!-- Each segment spans ~28deg, with small gaps -->
+
+                <!-- Critical (red) -->
+                <path d="M 30 120 A 90 90 0 0 1 57 47" stroke="#c0392b" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+                <!-- Quarter (orange) -->
+                <path d="M 62 43 A 90 90 0 0 1 101 17" stroke="#e67e22" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+                <!-- Half (yellow) -->
+                <path d="M 107 14 A 90 90 0 0 1 133 14" stroke="#f1c40f" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+                <!-- Three-quarter (yellow-green) -->
+                <path d="M 139 17 A 90 90 0 0 1 178 43" stroke="#a3be45" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+                <!-- Full (green) -->
+                <path d="M 183 47 A 90 90 0 0 1 210 120" stroke="#27ae60" stroke-width="18" fill="none" stroke-linecap="round" opacity="0.9"/>
+
+                <!-- Center pivot -->
+                <circle cx="120" cy="120" r="10" fill="#1b2d3f" stroke="rgba(201,168,76,0.4)" stroke-width="2"/>
+                <circle cx="120" cy="120" r="5" fill="var(--brass)"/>
+
+                <!-- Needle — rotated by JS -->
+                <g id="needleGroup" transform="rotate(-90, 120, 120)">
+                    <rect x="118" y="38" width="4" height="72" rx="2"
+                          fill="url(#needleGrad)" filter="url(#shadow)"/>
+                </g>
+
+                <!-- Fuel pump icon -->
+                <text x="120" y="108" text-anchor="middle" font-size="14" fill="rgba(201,168,76,0.6)">⛽</text>
+
+                <defs>
+                    <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#e74c3c"/>
+                        <stop offset="100%" stop-color="#c0392b"/>
+                    </linearGradient>
+                    <filter id="shadow">
+                        <feDropShadow dx="1" dy="1" stdDeviation="2" flood-opacity="0.5"/>
+                    </filter>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="fuel-label-row">
+            <span>E</span>
+            <span>F</span>
+        </div>
+
+        <div class="fuel-buttons">
+            <button class="fuel-btn" data-level="critical" onclick="setFuel(this)">Critical Low</button>
+            <button class="fuel-btn" data-level="quarter"  onclick="setFuel(this)">¼ Full</button>
+            <button class="fuel-btn active" data-level="half" onclick="setFuel(this)">½ Full</button>
+            <button class="fuel-btn" data-level="three"   onclick="setFuel(this)">¾ Full</button>
+            <button class="fuel-btn" data-level="full"    onclick="setFuel(this)">Full</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Notes Card -->
+<div class="card">
+    <div class="card-title">Notes</div>
+    <textarea id="notes" placeholder="Additional observations, destination, crew notes…"></textarea>
+</div>
+
+<!-- Actions -->
+<button class="btn-primary" onclick="saveEntry()">Log This Entry</button>
+<button class="btn-secondary" onclick="exportToCSV()">Export All Data → CSV</button>
+
+<!-- Entries -->
+<div class="card" style="margin-top:28px;">
+    <div class="entries-header">
+        <h2>Past Entries</h2>
+        <span class="entry-count" id="entryCount">0 entries</span>
+    </div>
+    <div id="entriesList"></div>
+</div>
+```
+
+</div>
+
+<div class="toast" id="toast">Entry saved ✓</div>
+
+<script>
+
+    // ── Slider value displays ──────────────────────────────────────────────
+    const sliders = ['skies','seas','winds','currents','visibility','pressure'];
+
+    sliders.forEach(id => {
+        const el = document.getElementById(id);
+        const display = document.getElementById(id + 'Value');
+        el.addEventListener('input', () => { display.textContent = el.value; });
+    });
+
+    // ── Fuel gauge ────────────────────────────────────────────────────────
+    // Maps each fuel level to a needle rotation angle (degrees from center-top)
+    // The arc goes from about -90deg (left/E) to +90deg (right/F)
+    // We rotate the needle group around the center (120,120)
+    const fuelAngles = {
+        critical: -90,   // pointing hard left
+        quarter:  -45,
+        half:       0,   // pointing straight up
+        three:     45,
+        full:      90    // pointing hard right
+    };
+
+    let selectedFuel = 'half';  // default
+
+    function setFuel(btn) {
+        // Remove active from all
+        document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFuel = btn.dataset.level;
+        animateNeedle(fuelAngles[selectedFuel]);
+    }
+
+    // Animate needle smoothly to target angle
+    let currentAngle = 0;   // starts at half (0 = straight up)
+
+    function animateNeedle(targetAngle) {
+        const step = () => {
+            const diff = targetAngle - currentAngle;
+            if (Math.abs(diff) < 0.5) {
+                currentAngle = targetAngle;
+                updateNeedle(currentAngle);
                 return;
             }
-            
-            // Build HTML for each entry
-            entriesList.innerHTML = entries.map((entry, index) => {
-                const date = new Date(entry.timestamp);
-                const formattedDate = date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                return `
-                    <div class="entry-card">
-                        <div class="entry-date">${formattedDate}</div>
-                        <div class="entry-metrics">
-                            <div class="metric">Skies: <span class="metric-value">${entry.skies}</span></div>
-                            <div class="metric">Seas: <span class="metric-value">${entry.seas}</span></div>
-                            <div class="metric">Winds: <span class="metric-value">${entry.winds}</span></div>
-                            <div class="metric">Currents: <span class="metric-value">${entry.currents}</span></div>
-                            <div class="metric">Visibility: <span class="metric-value">${entry.visibility}</span></div>
-                            <div class="metric">Pressure: <span class="metric-value">${entry.pressure}</span></div>
-                        </div>
-                        ${entry.notes ? `<div class="entry-notes">${entry.notes}</div>` : ''}
-                        <button class="delete-btn" onclick="deleteEntry(${index})">Delete</button>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        // Function to delete an entry
-        function deleteEntry(index) {
-            if (confirm('Are you sure you want to delete this entry?')) {
-                let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
-                entries.splice(index, 1); // Remove the entry at this index
-                localStorage.setItem('sailingEntries', JSON.stringify(entries));
-                displayEntries(); // Refresh the display
-            }
-        }
-        
-        // Function to export data to CSV
-        function exportToCSV() {
-            const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
-            
-            if (entries.length === 0) {
-                alert('No data to export yet!');
-                return;
-            }
-            
-            // Create CSV header
-            let csv = 'Date,Time,Skies,Seas,Winds,Currents,Visibility,Pressure,Notes\n';
-            
-            // Add each entry as a row
-            entries.forEach(entry => {
-                const date = new Date(entry.timestamp);
-                const dateStr = date.toLocaleDateString('en-US');
-                const timeStr = date.toLocaleTimeString('en-US');
-                
-                // Escape notes field (in case it contains commas)
-                const notes = entry.notes ? `"${entry.notes.replace(/"/g, '""')}"` : '';
-                
-                csv += `${dateStr},${timeStr},${entry.skies},${entry.seas},${entry.winds},${entry.currents},${entry.visibility},${entry.pressure},${notes}\n`;
-            });
-            
-            // Create a download link
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `sailing-conditions-${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }
-        
-        // Load and display entries when page loads
+            currentAngle += diff * 0.15;
+            updateNeedle(currentAngle);
+            requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+    }
+
+    function updateNeedle(angle) {
+        document.getElementById('needleGroup').setAttribute(
+            'transform', `rotate(${angle}, 120, 120)`
+        );
+    }
+
+    // Initialize needle at half
+    updateNeedle(0);
+
+    // ── Save entry ────────────────────────────────────────────────────────
+    function saveEntry() {
+        const entry = {
+            timestamp:  new Date().toISOString(),
+            skies:      document.getElementById('skies').value,
+            seas:       document.getElementById('seas').value,
+            winds:      document.getElementById('winds').value,
+            currents:   document.getElementById('currents').value,
+            visibility: document.getElementById('visibility').value,
+            pressure:   document.getElementById('pressure').value,
+            fuel:       selectedFuel,
+            notes:      document.getElementById('notes').value
+        };
+
+        let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+        entries.unshift(entry);
+        localStorage.setItem('sailingEntries', JSON.stringify(entries));
+
+        // Reset sliders
+        sliders.forEach(id => {
+            document.getElementById(id).value = 3;
+            document.getElementById(id + 'Value').textContent = '3';
+        });
+        document.getElementById('notes').value = '';
+
+        // Reset fuel to half
+        document.querySelectorAll('.fuel-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-level="half"]').classList.add('active');
+        selectedFuel = 'half';
+        animateNeedle(0);
+
         displayEntries();
-    </script>
+        showToast('Entry saved ✓');
+    }
+
+    // ── Display entries ───────────────────────────────────────────────────
+    const fuelLabels = {
+        critical: 'Critical Low',
+        quarter:  '¼ Full',
+        half:     '½ Full',
+        three:    '¾ Full',
+        full:     'Full'
+    };
+
+    function scoreClass(v) {
+        return 'score-' + v;
+    }
+
+    function displayEntries() {
+        const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+        document.getElementById('entryCount').textContent =
+            `${entries.length} ${entries.length === 1 ? 'entry' : 'entries'}`;
+
+        const list = document.getElementById('entriesList');
+
+        if (entries.length === 0) {
+            list.innerHTML = '<div class="no-entries">No entries yet — log your first sail above.</div>';
+            return;
+        }
+
+        list.innerHTML = entries.map((entry, index) => {
+            const date = new Date(entry.timestamp);
+            const formatted = date.toLocaleDateString('en-US', {
+                weekday: 'short', year: 'numeric', month: 'short',
+                day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            // Calculate average score
+            const scores = [entry.skies, entry.seas, entry.winds,
+                            entry.currents, entry.visibility, entry.pressure]
+                           .map(Number);
+            const avg = (scores.reduce((a,b) => a+b, 0) / scores.length).toFixed(1);
+
+            return `
+                <div class="entry-card">
+                    <div class="entry-date">${formatted} &nbsp;·&nbsp; Avg: <span class="${scoreClass(Math.round(avg))}">${avg}</span></div>
+                    <div class="entry-metrics">
+                        <div class="metric">Skies<span class="metric-value ${scoreClass(entry.skies)}">${entry.skies}</span></div>
+                        <div class="metric">Seas<span class="metric-value ${scoreClass(entry.seas)}">${entry.seas}</span></div>
+                        <div class="metric">Wind<span class="metric-value ${scoreClass(entry.winds)}">${entry.winds}</span></div>
+                        <div class="metric">Currents<span class="metric-value ${scoreClass(entry.currents)}">${entry.currents}</span></div>
+                        <div class="metric">Visibility<span class="metric-value ${scoreClass(entry.visibility)}">${entry.visibility}</span></div>
+                        <div class="metric">Pressure<span class="metric-value ${scoreClass(entry.pressure)}">${entry.pressure}</span></div>
+                    </div>
+                    <div class="entry-fuel">⛽ Fuel: <strong>${fuelLabels[entry.fuel] || entry.fuel}</strong></div>
+                    ${entry.notes ? `<div class="entry-notes">${entry.notes}</div>` : ''}
+                    <button class="delete-btn" onclick="deleteEntry(${index})">Delete</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ── Delete ─────────────────────────────────────────────────────────────
+    function deleteEntry(index) {
+        if (confirm('Delete this entry?')) {
+            let entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+            entries.splice(index, 1);
+            localStorage.setItem('sailingEntries', JSON.stringify(entries));
+            displayEntries();
+        }
+    }
+
+    // ── CSV Export ─────────────────────────────────────────────────────────
+    function exportToCSV() {
+        const entries = JSON.parse(localStorage.getItem('sailingEntries') || '[]');
+        if (entries.length === 0) { showToast('No data to export yet'); return; }
+
+        let csv = 'Date,Time,Skies,Seas,Wind,Currents,Visibility,Pressure,Fuel,Notes\n';
+        entries.forEach(e => {
+            const d = new Date(e.timestamp);
+            const notes = e.notes ? `"${e.notes.replace(/"/g,'""')}"` : '';
+            csv += `${d.toLocaleDateString()},${d.toLocaleTimeString()},` +
+                   `${e.skies},${e.seas},${e.winds},${e.currents},` +
+                   `${e.visibility},${e.pressure},${fuelLabels[e.fuel]||e.fuel},${notes}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url;
+        a.download = `sailing-log-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // ── Toast ──────────────────────────────────────────────────────────────
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    displayEntries();
+
+</script>
+
 </body>
 </html>
